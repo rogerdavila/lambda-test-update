@@ -17,7 +17,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Package lambdas
-        run: zip lambdatest.zip lambda_function.py
+        run: zip lambdatest_${{ github.run_id }}.zip lambda_function.py
       - name: Upload builds to S3 Bucket
         run: |
           aws s3 cp lambdatest_${{ github.run_id }}.zip s3://lambda-test-bucket-192168255261-us-east-2
