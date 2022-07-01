@@ -26,4 +26,4 @@ jobs:
           aws cloudformation deploy 
           --stack-name lambda-test-stack
           --template-file lambda-test.yaml 
-          --parameter-overrides RUN_ID=${{ github.run_id }}
+          --parameter-overrides RunId=${{ github.run_id }}
