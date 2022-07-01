@@ -1,0 +1,30 @@
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Setting AWS Configuration
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Package lambdas
+        working-directory: ./src/lambdas/
+        run: zip lambdatest.zip lambda_function.py
+      - name: Upload builds to S3 Bucket
+        run: |
+          aws s3 cp lambdatest_${{ github.run_id }}.zip s3://lambda-test-bucket-192168255261-us-east-2
+      - name: Deploy
+        run: >
+          aws cloudformation deploy 
+          --stack-name lambda-test-stack
+          --template-file lambda-test.yaml 
+          --parameter-overrides RUN_ID=${{ github.run_id }}
